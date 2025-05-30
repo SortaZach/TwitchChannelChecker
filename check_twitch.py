@@ -12,30 +12,36 @@ get_streams_url = "https://api.twitch.tv/helix/streams"
 # go to https://dev.twitch.tv/console/apps 
 #to register your app and get your credentials.
 params = {
-        "client_id": CLIENT_ID,
-        "client_secret": CLIENT_SECRET,
-        "grant_type": "client_credentials"
-        }
+    "client_id": CLIENT_ID,
+    "client_secret": CLIENT_SECRET,
+    "grant_type": "client_credentials"
+}
 
 r = httpx.post(twitch_url, data=params)
 access_token = r.json()["access_token"]
-headers = {"Authorization": f"Bearer {access_token}",
-           "Client-Id": CLIENT_ID,
-           }
-
-### List of the streamers we're looking for ###
-streamers_to_find = [
-    "ThePrimeagen",
-    "Mad_Magz_",
-    "Sir__Knight_",
-    "CriticalRole"
-] 
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Client-Id": CLIENT_ID,
+}
 
 ### Filter For the Streamers We Want To Track ###
 def get_streamers(streamers):
-    streams = httpx.get(get_streams_url, headers=headers)
+    url = makeUrl(streamers)
+    streams = httpx.get(url, headers=headers)
     streams.raise_for_status()
-    all_streams = streams.json()
-    print("Response: ", all_streams)
+    data = streams.json()
+    streams_data = data["data"]
+    return streams_data 
 
-get_streamers(streamers_to_find)
+### Add each Streamer from the list to the url so we get the right information ###
+def makeUrl(streamers):
+    url = get_streams_url
+    count = 0
+    for streamer in streamers:
+        if count == 0:
+            url = url+"?user_login="+streamer
+        else:
+            url = url+"&user_login="+streamer
+        count+=1
+    return url
+
