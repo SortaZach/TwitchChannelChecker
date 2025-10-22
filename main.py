@@ -3,6 +3,7 @@ from check_twitch import get_streamers
 ### The streamers we're wanting to find ###
 streamer_list = [
     "ThePrimeagen",
+    "Teej_TV",
     "Mad_Magz_",
     "Sir__Knight_",
     "CriticalRole"
